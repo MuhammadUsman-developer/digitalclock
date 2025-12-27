@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masjid Digital Watch</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .clock {
+      font-size: 48px;
+      margin-bottom: 40px;
+      font-weight: bold;
+    }
+    .prayer-times {
+      max-width: 400px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .prayer {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      display: flex;
+      justify-content: space-between;
+      font-size: 20px;
+    }
+    .next {
+      background-color: #d1e7dd;
+      font-weight: bold;
+    }
+    .border{
+      width: 500px;
+      border: 20px solid brown;
+      margin-left: 400px;
+      border-radius: 5px;
+      background-color: black;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="border">
+  <h1>Prayer Integrated Digital Clock</h1>
+  <div class="clock" id="clock">00:00:00</div>
+
+  <div class="prayer-times" id="prayer-times">
+    <!-- Prayer times will be inserted here -->
+  </div>
+  </div>
+
+  <script>
+    // // Example prayer times (24-hour format)
+    // const prayerSchedule = [
+    //   { name: "Fajr", time: "05:15" },
+    //   { name: "Dhuhr", time: "12:30" },
+    //   { name: "Asr", time: "05:00" },
+    //   { name: "Maghrib", time: "06:28" },
+    //   { name: "Isha", time: "08:15" }
+    // ];
+
+    const clockElement = document.getElementById('clock');
+    const prayerContainer = document.getElementById('prayer-times');
+
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('en-GB');
+      clockElement.textContent = timeStr;
+
+      highlightNextPrayer(now);
+    }
+
+    function highlightNextPrayer(now) {
+      prayerContainer.innerHTML = '';
+
+       const currentTimeMinutes = now.getHours() * 60 + now.getMinutes();
+       let nextPrayerIndex = -1;
+
+      // Find the next prayer
+      for (let i = 0; i < prayerSchedule.length; i++) {
+        const [h, m] = prayerSchedule[i].time.split(':').map(Number);
+        const prayerTimeMinutes = h * 60 + m;
+
+        if (currentTimeMinutes < prayerTimeMinutes) {
+          nextPrayerIndex = i;
+          break;
+        }
+      }
+
+      // If no upcoming prayer, assume it's the next day's Fajr
+      if (nextPrayerIndex === -1) nextPrayerIndex = 0;
+
+      // Render the list with the next prayer highlighted
+      prayerSchedule.forEach((prayer, index) => {
+        const div = document.createElement('div');
+        div.className = 'prayer' + (index === nextPrayerIndex ? ' next' : '');
+        div.innerHTML = `<span>${prayer.name}</span><span>${prayer.time}</span>`;
+        prayerContainer.appendChild(div);
+      });
+    }
+
+    setInterval(updateClock, 1000);
+    updateClock(); // Run once immediately
+  </script>
+
+</body>
+</html>
